@@ -9,6 +9,7 @@ type Props = {
         team: "north" | "south";
         connection: ReturnType<typeof useGameConnection>;
     }) => void;
+    receiver: (msg: any) => void;
 };
 
 export default function JoinRoomScreen({ onJoined }: Props) {

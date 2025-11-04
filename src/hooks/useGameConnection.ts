@@ -28,6 +28,7 @@ export function useGameConnection() {
   const [me, setMe] = useState<any>(null);
   const [dataStream, setDataStream] = useState<LocalDataStream | null>(null);
   const [room, setRoom] = useState<any>(null);
+  
 
   /**  トークン取得とContext初期化 */
   const initContext = useCallback(async () => {
@@ -51,9 +52,12 @@ export function useGameConnection() {
     const me = await room.join({ metadata: displayName });
     setMe(me);
 
-    const data:any = await SkyWayStreamFactory.createDataStream();
-    await me.publish(data);
-    setDataStream(data);
+    //const data:any = await SkyWayStreamFactory.createDataStream();
+    //await me.publish(data);
+    //setDataStream(data);
+    const localStream = await SkyWayStreamFactory.createDataStream();
+    await me.publish(localStream);
+    setDataStream(localStream);
 
     room.publications.forEach(async (p) => {
       // 自分のは subscribe しない
@@ -77,12 +81,9 @@ export function useGameConnection() {
         console.log({new:e.publication.publisher.id, me:me.id});
         const sub = await me.subscribe(e.publication);
         // @ts-ignore
-        sub.stream.onData?.add((d:any)=>{
+        sub.stream.onData.add((d:any)=>{
           const mesg = JSON.parse(d);
-          if (mesg.newstate !== null) {
-            //setGameState(mesg.newstate);
-            receiver(mesg);
-          }
+          receiver(mesg);  
         });
       }
     });
@@ -103,6 +104,7 @@ export function useGameConnection() {
             console.error(e);
         }
     }, [dataStream]);
+
 
   return {
     me,

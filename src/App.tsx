@@ -14,6 +14,8 @@ export default function App() {
   const [nickName, setNickName] = useState("");
   const [northFormation, setNorthFormation] = useState<FormationInput | null>(null);
   const [southFormation, setSouthFormation] = useState<FormationInput | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+
 
   function handleJoined({
     team,
@@ -33,6 +35,11 @@ export default function App() {
     setPage("setup");
   }
 
+  function receiver(msg: any) {
+    setMessages(prev => [...prev, msg]);
+  }
+  
+
   // === 部隊編成完了時 ===
   const handleSetupComplete = (north: FormationInput, south: FormationInput) => {
     setNorthFormation(north);
@@ -50,7 +57,7 @@ export default function App() {
     setPage("game");
   };
   if (page === "join"){
-    return <JoinRoomScreen onJoined={handleJoined} />;
+    return <JoinRoomScreen onJoined={handleJoined} receiver={receiver}/>;
   }
 
   if (page === "setup" && team && connection) {
@@ -69,6 +76,7 @@ export default function App() {
         northFormation={northFormation}
         southFormation={southFormation}
         onComplete={handleFormationComplete}
+        messages = {messages}
       />
     );
   }
