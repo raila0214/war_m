@@ -16,6 +16,10 @@ export default function App() {
   const [southFormation, setSouthFormation] = useState<FormationInput | null>(null);
   const [messages, setMessages] = useState<any[]>([]);
 
+  const receiver = (msg: any) => {
+    setMessages((prev) => [...prev,msg]);
+  }
+
 
   function handleJoined({
     team,
@@ -33,10 +37,6 @@ export default function App() {
     setNickName(nickName);
     setConnection(connection);
     setPage("setup");
-  }
-
-  function receiver(msg: any) {
-    setMessages(prev => [...prev, msg]);
   }
   
 
@@ -56,8 +56,9 @@ export default function App() {
     setSouthFormation(placedSouth);
     setPage("game");
   };
+
   if (page === "join"){
-    return <JoinRoomScreen onJoined={handleJoined} receiver={receiver}/>;
+    return <JoinRoomScreen onJoined={handleJoined} />;
   }
 
   if (page === "setup" && team && connection) {

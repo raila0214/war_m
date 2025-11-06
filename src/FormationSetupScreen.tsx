@@ -133,22 +133,29 @@ export default function FormationSetupScreen({
   // 配置完了 取り消し
   function handleComplete(){
     setIsReady(true);
+    const data = {
+      positions: placedUnits.map(u => ({
+        id: u.id,
+        x: u.x,
+        y: u.y,
+      })),
+    }
     if(team === "north"){
       connection.send({
         type: "placeCompleteNorth",
-        placedUnits,
+        ...data
       });
       return;
     }
     connection.send({
       type: "placeCompleteSouth",
-      placedUnits,
+      ...data
     });
 
     connection.send({
       type: "gameStart",
       north: placedUnitsNorth,
-      south: placedUnits,
+      south: data.positions,
     });
   }
   function applyBothOnComplete() {
@@ -176,7 +183,10 @@ export default function FormationSetupScreen({
   }
 
   
-  const showOverlay = (team === "north" && isReady && !isNorthCorrect) || (team === "south" && !isNorthCorrect);
+  const showOverlay = 
+    team === "north" 
+    ? isReady && !isNorthCorrect
+    : !isNorthCorrect;
 
   return (
     <div style={{ padding: 40, textAlign: "center" }}>
@@ -189,11 +199,12 @@ export default function FormationSetupScreen({
       {showOverlay && (
         <div
           style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width:"100vw",
-            height:"100vh",
+            position: "absolute",
+            top: 253,
+            left: 201,
+            transform: "translateX(-50%)",
+            width: cols * cellSize,
+            height: rows * cellSize,
             background: "rgba(0,0,0,0.6)",
             color: "white",
             display: "flex",
@@ -341,6 +352,8 @@ export default function FormationSetupScreen({
       {!isReady ? (
           <button
             style={{ padding: "10px 20px", fontSize: 18 }}
+            disabled={
+              placedUnits.filter((u) => u.id.startsWith(team)).length === 0 }
             onClick={handleComplete}
           >
             ▶︎ 配置完了

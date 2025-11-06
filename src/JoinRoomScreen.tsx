@@ -8,6 +8,7 @@ type Props = {
         nickName: string;
         team: "north" | "south";
         connection: ReturnType<typeof useGameConnection>;
+        receiver: any;
     }) => void;
     receiver: (msg: any) => void;
 };
@@ -18,8 +19,8 @@ export default function JoinRoomScreen({ onJoined }: Props) {
     const [error, setError] = useState<string | null>(null);
     const connection = useGameConnection();
 
-    function receiver(msg: string){
-        console.log(msg);
+    function receiver(msg: any){
+        console.log("RECV:",msg);
     }
 
 
@@ -41,7 +42,7 @@ export default function JoinRoomScreen({ onJoined }: Props) {
                 setError("すでに2人のプレイヤーが参加しています");
                 return;
             }
-            onJoined({ roomName, nickName, team, connection });
+            onJoined({ roomName, nickName, team, connection , receiver});
         } catch (e) {
             console.error(e);
             setError("接続失敗");
